@@ -2,9 +2,16 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <string.h>
-#include "../include/order.h"
 
+typedef struct Order {
+    long long order_id;
+    int quantity;
+    double price;
+    struct timeval time_stamp;
+    char side;
+} Order;
 
+// Function to create a new order
 Order *create_new_order(long long order_id, int quantity, double price, char side) {
     
     Order *newOrder = (Order*)malloc(sizeof(Order));
@@ -56,5 +63,28 @@ int compareOrders(const Order* order1, const Order* order2) {
             return 0; // Orders were placed at the exact same time
         }
     }
-}/to something
+}
 
+int main() {
+    Order order1, order2;
+
+    // Create two new orders with different details
+    create_new_order(1001, 50, 250.75, "AAPL", 'B', &order1);
+    create_new_order(1002, 75, 245.50, "GOOG", 'S', &order2);
+
+    // Print the orders
+    print_order(order1);
+    print_order(order2);
+
+    // Compare orders based on timestamp
+    int comparison_result = compareOrders(&order1, &order2);
+    if (comparison_result == 0) {
+        printf("Orders were placed at the same time.\n");
+    } else if (comparison_result < 0) {
+        printf("Order 1 was placed before Order 2.\n");
+    } else {
+        printf("Order 2 was placed before Order 1.\n");
+    }
+
+    return 0;
+}
