@@ -56,5 +56,5 @@ int compareOrders(const Order* order1, const Order* order2) {
             return 0; // Orders were placed at the exact same time
         }
     }
-}/to something
+}
 

@@ -1,25 +1,25 @@
 #include "../include/avl_tree.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
-
-
-init_buy_order_avl(buy_order_avl *t) {
+void init_buy_order_avl(buy_order_avl *t) {
     t->max_order = NULL;
     t->root = NULL;
     return;
 }
 
-init_sell_order_avl(sell_order_avl *t) {
+void init_sell_order_avl(sell_order_avl *t) {
     t->min_order = NULL;
     t->root = NULL;
     return;
 }
 
 Node *createNode(Order *order) {
-    
+
     Node *newNode = (Node*)malloc(sizeof(Node));
-    
+
     if(!newNode) {
         printf("New node not created, malloc failed!\n");
         return NULL;
@@ -34,7 +34,7 @@ Node *createNode(Order *order) {
 }
 
 int getHeight(Node *node) {
-    
+
     if(!node) {
         return 0;
     }
@@ -109,353 +109,200 @@ Node* rebalance(Node *node) {
     return node;
 }
 
-// Iterative AVL insertion with duplicate handling and empty tree check
-void insert_order(buy_order_avl *t, Order *order) {
-
-    Node *newNode = createNode(order);
-
-    if (!t->root) {
-        // Tree is empty, insert the first node
-        t->root = newNode;
-        t->max_order = order; // First inserted node is max for buy orders
-        return;
-    }
-
-    Node *current = t->root;
-    Node *parent = NULL;
-    Node *path[100];
-    int pathIndex = 0;
-
-    // Traverse the tree iteratively
-    while (current) {
-        path[pathIndex++] = current;
-        parent = current;
-
-        if (order->price < current->order->price ||
-           (order->price == current->order->price && (compareOrders(order, current->order) == -1)) {
-            current = current->lchild;
-        } else {
-            // Insert duplicates with equal price based on time_stamp
-            current = current->rchild;
+Node* insert_buy_order_recursive(Node *node, Order *order, buy_order_avl *t) {
+    if (!node) {
+        // Create a new node for the order
+        Node *newNode = createNode(order);
+        if (!t->max_order || order->price > t->max_order->price ||
+            (order->price == t->max_order->price && compareOrders(order, t->max_order) == -1)) {
+            t->max_order = order;
         }
+        return newNode;
     }
 
-    // Insert the new node
-    if (order->price < parent->order->price ||
-       (order->price == parent->order->price && order->time_stamp < parent->order->time_stamp)) {
-        parent->lchild = newNode;
+    // Compare the price and the timestamp to decide whether to go left or right
+    if (order->price < node->order->price ||
+        (order->price == node->order->price && compareOrders(order, node->order) == -1)) {
+        node->lchild = insert_buy_order_recursive(node->lchild, order, t);
     } else {
-        parent->rchild = newNode;
+        node->rchild = insert_buy_order_recursive(node->rchild, order, t);
     }
 
-    // Rebalance and update max_order as we backtrack
-    while (pathIndex > 0) {
-        pathIndex--;
-        path[pathIndex] = rebalance(path[pathIndex]);
+    // Update height of the current node
+    updateHeight(node);
 
-        if (pathIndex != 0) {
-            if (path[pathIndex - 1]->lchild == path[pathIndex + 1]) {
-                path[pathIndex - 1]->lchild = path[pathIndex];
-            } else {
-                path[pathIndex - 1]->rchild = path[pathIndex];
-            }
-        } else {
-            t->root = path[pathIndex];
-        }
-    }
-
-    // Update max_order for buy orders
-    if (!t->max_order || order->price > t->max_order->price ||
-       (order->price == t->max_order->price && ((compareOrders(order, t->max_order) == 1)) {
-        t->max_order = order;
-    } 
+    // Rebalance the node if necessary
+    return rebalance(node);
 }
 
-// Similar insertion for sell orders, maintaining min_order
+Node* insert_sell_order_recursive(Node *node, Order *order, sell_order_avl *t) {
+    if (!node) {
+        // Create a new node for the order
+        Node *newNode = createNode(order);
+        if (!t->min_order || order->price < t->min_order->price ||
+            (order->price == t->min_order->price && compareOrders(order, t->min_order) == -1)) {
+            t->min_order = order;
+        }
+        return newNode;
+    }
+
+    // Compare the price and the timestamp to decide whether to go left or right
+    if (order->price < node->order->price ||
+        (order->price == node->order->price && compareOrders(order, node->order) == -1)) {
+        node->lchild = insert_sell_order_recursive(node->lchild, order, t);
+    } else {
+        node->rchild = insert_sell_order_recursive(node->rchild, order, t);
+    }
+
+    // Update height of the current node
+    updateHeight(node);
+
+    // Rebalance the node if necessary
+    return rebalance(node);
+}
+
+void insert_buy_order(buy_order_avl *t, Order *order) {
+    t->root = insert_buy_order_recursive(t->root, order, t);
+}
+
 void insert_sell_order(sell_order_avl *t, Order *order) {
+    t->root = insert_sell_order_recursive(t->root, order, t);
+}
 
-    Node *newNode = (Node*)malloc(sizeof(Node));
-    newNode->order = order;
-    newNode->lchild = newNode->rchild = NULL;
-    newNode->height = 1;
 
-    if (!t->root) {
-        // Tree is empty, insert the first node
-        t->root = newNode;
-        t->min_order = order; // First inserted node is min for sell orders
-        return;
+int delete_two_children_node(Node *node) {
+    if (node == NULL || ((node)->lchild == NULL && (node)->rchild == NULL)) {
+        return 0;
     }
 
-    Node *current = t->root;
-    Node *parent = NULL;
-    Node *path[100];
-    int pathIndex = 0;
-
-    while (current) {
-        path[pathIndex++] = current;
-        parent = current;
-
-        if (order->price < current->order->price ||
-           (order->price == current->order->price && order->time_stamp < current->order->time_stamp)) {
-            current = current->lchild;
-        } else {
-            // Insert duplicates with equal price based on time_stamp
-            current = current->rchild;
-        }
+    // Find the in-order successor (smallest node in right subtree)
+    Node *successorParent = node;
+    Node *successor = (node)->rchild;
+    while (successor->lchild != NULL) {
+        successorParent = successor;
+        successor = successor->lchild;
     }
 
-    if (order->price < parent->order->price ||
-       (order->price == parent->order->price && order->time_stamp < parent->order->time_stamp)) {
-        parent->lchild = newNode;
+    // Copy successor's order data to the current node
+    (node)->order = successor->order;
+
+    // Delete the successor node
+    if (successorParent->lchild == successor) {
+        successorParent->lchild = successor->rchild;
     } else {
-        parent->rchild = newNode;
+        successorParent->rchild = successor->rchild;
     }
+    free(successor);
 
-    while (pathIndex > 0) {
-        pathIndex--;
-        path[pathIndex] = rebalance(path[pathIndex]);
-
-        if (pathIndex != 0) {
-            if (path[pathIndex - 1]->lchild == path[pathIndex + 1]) {
-                path[pathIndex - 1]->lchild = path[pathIndex];
-            } else {
-                path[pathIndex - 1]->rchild = path[pathIndex];
-            }
-        } else {
-            t->root = path[pathIndex];
-        }
-    }
-
-    // Update min_order for sell orders
-    if (!t->min_order || order->price < t->min_order->price ||
-       (order->price == t->min_order->price && order->time_stamp < t->min_order->time_stamp)) {
-        t->min_order = order;
-    }
+    return 1;
 }
 
-void delete_buy_order(buy_order_avl *t, Order *order) {
-    if (!t->root) return; // Tree is empty, nothing to delete
-
-    Node *current = t->root;
-    Node *parent = NULL;
-    Node *path[100];
-    int pathIndex = 0;
-
-    // Locate the node to delete, comparing price, time_stamp, and order_id to handle duplicates
-    while (current && (current->order->price != order->price || 
-                       current->order->time_stamp != order->time_stamp || 
-                       current->order->order_id != order->order_id)) {
-        path[pathIndex++] = current;
-        parent = current;
-        if (order->price < current->order->price || 
-           (order->price == current->order->price && order->time_stamp < current->order->time_stamp) ||
-           (order->price == current->order->price && order->time_stamp == current->order->time_stamp && order->order_id < current->order->order_id)) {
-            current = current->lchild;
-        } else {
-            current = current->rchild;
-        }
+int delete_one_child_node(Node **node) {
+    if (*node == NULL) {
+        return 0;
     }
 
-    // If node not found
-    if (!current) return;
-
-    // Case 1: Node has no children (leaf)
-    if (!current->lchild && !current->rchild) {
-        if (!parent) {
-            // Node to delete is the root
-            t->root = NULL;
-        } else if (parent->lchild == current) {
-            parent->lchild = NULL;
-        } else {
-            parent->rchild = NULL;
-        }
-        free(current);
-    }
-    // Case 2: Node has one child
-    else if (!current->lchild || !current->rchild) {
-        Node *child = (current->lchild) ? current->lchild : current->rchild;
-        if (!parent) {
-            // Node to delete is the root
-            t->root = child;
-        } else if (parent->lchild == current) {
-            parent->lchild = child;
-        } else {
-            parent->rchild = child;
-        }
-        free(current);
-    }
-    // Case 3: Node has two children
-    else {
-        // Find in-order successor
-        Node *successor = current->rchild;
-        Node *successorParent = current;
-        path[pathIndex++] = current; // Add current to path
-
-        while (successor->lchild) {
-            path[pathIndex++] = successor;
-            successorParent = successor;
-            successor = successor->lchild;
-        }
-
-        // Replace current's order with successor's order
-        current->order = successor->order;
-
-        // Remove the successor node
-        if (successorParent->lchild == successor) {
-            successorParent->lchild = successor->rchild;
-        } else {
-            successorParent->rchild = successor->rchild;
-        }
-        free(successor);
-    }
-
-    // Rebalance the tree as we backtrack
-    while (pathIndex > 0) {
-        pathIndex--;
-        path[pathIndex] = rebalance(path[pathIndex]);
-
-        if (pathIndex != 0) {
-            if (path[pathIndex - 1]->lchild == path[pathIndex + 1]) {
-                path[pathIndex - 1]->lchild = path[pathIndex];
-            } else {
-                path[pathIndex - 1]->rchild = path[pathIndex];
-            }
-        } else {
-            t->root = path[pathIndex];
-        }
-    }
-
-    // Update max_order
-    t->max_order = NULL; // Reset and find max order again
-    Node *node = t->root;
-    while (node) {
-        if (!t->max_order || node->order->price > t->max_order->price ||
-           (node->order->price == t->max_order->price && node->order->time_stamp > t->max_order->time_stamp) ||
-           (node->order->price == t->max_order->price && node->order->time_stamp == t->max_order->time_stamp && node->order->order_id > t->max_order->order_id)) {
-            t->max_order = node->order;
-        }
-        node = node->rchild; // Move to rightmost node for max order
-    }
+    Node *child = (*node)->lchild ? (*node)->lchild : (*node)->rchild;
+    free(*node);
+    *node = child;
+    return 1;
 }
 
-void delete_sell_order(sell_order_avl *t, Order *order) {
-    if (!t->root) return; // Tree is empty, nothing to delete
+int delete_leaf_node(Node **node) {
+    if (*node == NULL) {
+        return 0;
+    }
+    free(*node);
+    *node = NULL;
+    return 1;
+}
 
-    Node *current = t->root;
-    Node *parent = NULL;
-    Node *path[100];
-    int pathIndex = 0;
+int delete_buy_order(buy_order_avl *t, Order *order, Node **n) {
+    int flag = 0;
+    if(*n == NULL) { 
+        printf("Node not found\n");
+        return 0;
+    }
 
-    // Locate the node to delete, comparing price, time_stamp, and order_id to handle duplicates
-    while (current && (current->order->price != order->price || 
-                       current->order->time_stamp != order->time_stamp || 
-                       current->order->order_id != order->order_id)) {
-        path[pathIndex++] = current;
-        parent = current;
-        if (order->price < current->order->price || 
-           (order->price == current->order->price && order->time_stamp < current->order->time_stamp) ||
-           (order->price == current->order->price && order->time_stamp == current->order->time_stamp && order->order_id < current->order->order_id)) {
-            current = current->lchild;
+    if((*n)->order->price == order->price && (*n)->order->order_id == order->order_id) {
+        if ((*n)->lchild == NULL && (*n)->rchild == NULL) {
+            // Node is a leaf
+            flag = delete_leaf_node(n);
+        } else if ((*n)->lchild == NULL || (*n)->rchild == NULL) {
+            // Node has only one child
+            flag = delete_one_child_node(n);
         } else {
-            current = current->rchild;
+            // Node has two children
+            flag = delete_two_children_node(*n);
         }
     }
-
-    // If node not found
-    if (!current) return;
-
-    // Case 1: Node has no children (leaf)
-    if (!current->lchild && !current->rchild) {
-        if (!parent) {
-            // Node to delete is the root
-            t->root = NULL;
-        } else if (parent->lchild == current) {
-            parent->lchild = NULL;
-        } else {
-            parent->rchild = NULL;
-        }
-        free(current);
-    }
-    // Case 2: Node has one child
-    else if (!current->lchild || !current->rchild) {
-        Node *child = (current->lchild) ? current->lchild : current->rchild;
-        if (!parent) {
-            // Node to delete is the root
-            t->root = child;
-        } else if (parent->lchild == current) {
-            parent->lchild = child;
-        } else {
-            parent->rchild = child;
-        }
-        free(current);
-    }
-    // Case 3: Node has two children
-    else {
-        // Find in-order successor
-        Node *successor = current->rchild;
-        Node *successorParent = current;
-        path[pathIndex++] = current; // Add current to path
-
-        while (successor->lchild) {
-            path[pathIndex++] = successor;
-            successorParent = successor;
-            successor = successor->lchild;
-        }
-
-        // Replace current's order with successor's order
-        current->order = successor->order;
-
-        // Remove the successor node
-        if (successorParent->lchild == successor) {
-            successorParent->lchild = successor->rchild;
-        } else {
-            successorParent->rchild = successor->rchild;
-        }
-        free(successor);
+    else if((*n)->order->price > order->price ||((*n)->order->price == order->price && compareOrders(order, (*n)->order) == -1)) {
+        flag = delete_buy_order(t, order, &(*n)->lchild);
     }
 
-    // Rebalance the tree as we backtrack
-    while (pathIndex > 0) {
-        pathIndex--;
-        path[pathIndex] = rebalance(path[pathIndex]);
+    else if((*n)->order->price < order->price ||((*n)->order->price == order->price && compareOrders(order, (*n)->order) == 1)) {
 
-        if (pathIndex != 0) {
-            if (path[pathIndex - 1]->lchild == path[pathIndex + 1]) {
-                path[pathIndex - 1]->lchild = path[pathIndex];
-            } else {
-                path[pathIndex - 1]->rchild = path[pathIndex];
-            }
-        } else {
-            t->root = path[pathIndex];
-        }
+        flag = delete_buy_order(t, order, &(*n)->rchild);
     }
 
-    // Update min_order for sell orders
-    t->min_order = NULL; // Reset min_order
-    Node *node = t->root;
-    while (node) {
-        if (!t->min_order || node->order->price < t->min_order->price ||
-           (node->order->price == t->min_order->price && node->order->time_stamp < t->min_order->time_stamp) ||
-           (node->order->price == t->min_order->price && node->order->time_stamp == t->min_order->time_stamp && node->order->order_id < t->min_order->order_id)) {
-            t->min_order = node->order;
-        }
-        node = node->lchild; // Move to leftmost node for min order
+    if(flag) {
+        rebalance(*n);
     }
+
+    return flag;
 }
 
 
-// In-order traversal for buy-order AVL tree
+int delete_sell_order(sell_order_avl *t, Order *order, Node **n) {
+    int flag = 0;
+    if(*n == NULL) { 
+        printf("Node not found\n");
+        return 0;
+    }
+
+    if((*n)->order->price == order->price && (*n)->order->order_id == order->order_id) {
+        if ((*n)->lchild == NULL && (*n)->rchild == NULL) {
+            // Node is a leaf
+            flag = delete_leaf_node(n);
+        } else if ((*n)->lchild == NULL || (*n)->rchild == NULL) {
+            // Node has only one child
+            flag = delete_one_child_node(n);
+        } else {
+            // Node has two children
+            flag = delete_two_children_node(*n);
+        }
+    }
+    else if((*n)->order->price > order->price ||((*n)->order->price == order->price && compareOrders(order, (*n)->order) == -1)) {
+        flag = delete_sell_order(t, order, &(*n)->lchild);
+    }
+
+    else if((*n)->order->price < order->price ||((*n)->order->price == order->price && compareOrders(order, (*n)->order) == 1)) {
+
+        flag = delete_sell_order(t, order, &(*n)->rchild);
+    }
+
+    if(flag) {
+        rebalance(*n);
+    }
+
+    return flag;
+}
+    // In-order traversal for buy-order AVL tree
 void inorder_buy_order(Node *node) {
     if (node == NULL) {
         return;
     }
-    
+
     // Traverse left subtree
     inorder_buy_order(node->lchild);
-    
+
     // Visit the node (print the order)
-    printf("Order ID: %d, Price: %.2f, TimeStamp: %ld\n", node->order->order_id, node->order->price, node->order->time_stamp);
-    
+
+    printf("Order ID: %lld, Price: %.2f, time_stamp: %ld.%06ld\n",
+           node->order->order_id,
+           node->order->price,
+           (long)node->order->time_stamp.tv_sec,
+           (long)node->order->time_stamp.tv_usec);
     // Traverse right subtree
     inorder_buy_order(node->rchild);
 }
@@ -465,16 +312,152 @@ void inorder_sell_order(Node *node) {
     if (node == NULL) {
         return;
     }
-    
+
     // Traverse left subtree
     inorder_sell_order(node->lchild);
-    
+
     // Visit the node (print the order)
-    printf("Order ID: %d, Price: %.2f, TimeStamp: %ld\n", node->order->order_id, node->order->price, node->order->time_stamp);
-    
+
+    printf("Order ID: %lld, Price: %.2f, time_stamp: %ld.%06ld\n",
+           node->order->order_id,
+           node->order->price,
+           (long)node->order->time_stamp.tv_sec,
+           (long)node->order->time_stamp.tv_usec);
     // Traverse right subtree
     inorder_sell_order(node->rchild);
 }
+
+
+// Function to generate a unique 10-digit order ID
+long long int generate_unique_order_id() {
+    static long long int counter = 1000000000; // Start from a 10-digit number
+    return counter++; // Increment and return unique ID
+}
+
+Order* create_unique_order(char type) {
+    Order* order = (Order*)malloc(sizeof(Order));
+
+    // Generate a unique 10-digit order_id
+    order->order_id = generate_unique_order_id();
+    order->side = type;
+    
+    // Randomize quantity between 1 and 100
+    order->quantity = rand() % 100 + 1; // Random quantity between 1 and 100
+    
+    // Randomize price between 50.00 and 60.00, with two decimal places
+    order->price = (rand() % 11) + 50.00; // Random price between 50.00 and 60.00
+
+    // Round to two decimal places
+    order->price = ((int)(order->price * 100)) / 100.0;
+
+    // Get current time for unique timestamp
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+
+    // Introduce a small delay (in microseconds) to prevent same timestamp for multiple orders
+   usleep(10);  // 10 microseconds delay (or adjust as necessary)
+
+    order->time_stamp.tv_sec = tv.tv_sec;
+    order->time_stamp.tv_usec = tv.tv_usec;
+
+    return order;
+}
+
+void insert_sample_orders(buy_order_avl *buy_tree, sell_order_avl *sell_tree) {
+    srand(time(NULL)); // Initialize random seed
+    
+    for (int i = 0; i < 10; i++) {
+        // Create and insert buy order
+        Order *buy_order = create_unique_order('B');
+    
+        printf("Order ID: %lld, Price: %.2f, time_stamp: %ld.%06ld\n",
+               buy_order->order_id,
+               buy_order->price,
+               (long)buy_order->time_stamp.tv_sec,
+               (long)buy_order->time_stamp.tv_usec);
+        insert_buy_order(buy_tree, buy_order);
+        
+        // Create and insert sell order
+        Order *sell_order = create_unique_order('S');
+        insert_sell_order(sell_tree, sell_order);
+    }
+}
+
+Order *search(buy_order_avl *t, long long order_id, double price) {
+
+    Node *n = t->root;
+    while(n) {
+        if(n->order->price == price && n->order->order_id == order_id) {
+            return n->order;
+        }
+        else if(n->order->price > price) {
+            n = n->lchild;
+        }
+        else {
+            n = n->rchild;
+        }
+    }
+    return NULL;
+}
+
+Order *search_sell(sell_order_avl *t, long long order_id, double price) {
+
+    Node *n = t->root;
+    while(n) {
+        if(n->order->price == price && n->order->order_id == order_id) {
+            return n->order;
+        }
+        else if(n->order->price > price) {
+            n = n->lchild;
+        }
+        else {
+            n = n->rchild;
+        }
+    }
+    return NULL;
+}
+// Example call
 int main() {
+    buy_order_avl buy_tree;
+    sell_order_avl sell_tree;
+
+    // Initialize AVL trees for buy and sell orders
+    init_buy_order_avl(&buy_tree);
+    init_sell_order_avl(&sell_tree);
+
+    // Insert sample orders
+    insert_sample_orders(&buy_tree, &sell_tree);
+
+    // Print buy orders in in-order traversal
+    printf("In-order traversal of Buy Orders:\n");
+    inorder_buy_order(buy_tree.root);
+
+    // Print sell orders in in-order traversal
+    printf("In-order traversal of Sell Orders:\n");
+    inorder_sell_order(sell_tree.root);
+
+    printf("Enter order id and price to delete\n");
+    long long order_id;
+    double price;
+    scanf("%lld %lf", &order_id, &price);
+    Order *order = search(&buy_tree, order_id, price);
+    if(!order) printf("Order not found!\n");
+    if(delete_buy_order(&buy_tree, order, &buy_tree.root)) {
+        printf("Delete successful\n");
+    }
+
+    printf("In-order traversal of Buy Orders:\n");
+    inorder_buy_order(buy_tree.root);
+    
+    printf("Enter order id and price to delete\n");
+    scanf("%lld %lf", &order_id, &price);
+    
+    order = search_sell(&sell_tree, order_id, price);
+    if(delete_sell_order(&sell_tree, order, &sell_tree.root)) {
+        printf("Delete successful\n");
+    }
+
+    printf("In-order traversal of sell Orders:\n");
+    inorder_sell_order(sell_tree.root);
     return 0;
 }

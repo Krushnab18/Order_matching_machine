@@ -1,0 +1,44 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/krushna/DSA-PROJECT/src/main/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+compareOrders	order.c	/^int compareOrders(const Order* order1, const Order* order2) {$/;"	f	typeref:typename:int
+createNode	avl_tree.c	/^Node *createNode(Order *order) {$/;"	f	typeref:typename:Node *
+create_new_order	order.c	/^Order *create_new_order(long long order_id, int quantity, double price, char side) {$/;"	f	typeref:typename:Order *
+create_unique_order	avl_tree.c	/^Order* create_unique_order(char type) {$/;"	f	typeref:typename:Order *
+create_unique_order	generate_order.c	/^Order* create_unique_order(char type) {$/;"	f	typeref:typename:Order *
+delete_buy_order	avl_tree.c	/^int delete_buy_order(buy_order_avl *t, Order *order, Node **n) {$/;"	f	typeref:typename:int
+delete_leaf_node	avl_tree.c	/^int delete_leaf_node(Node **node) {$/;"	f	typeref:typename:int
+delete_one_child_node	avl_tree.c	/^int delete_one_child_node(Node **node) {$/;"	f	typeref:typename:int
+delete_sell_order	avl_tree.c	/^int delete_sell_order(sell_order_avl *t, Order *order, Node **n) {$/;"	f	typeref:typename:int
+delete_two_children_node	avl_tree.c	/^int delete_two_children_node(Node *node) {$/;"	f	typeref:typename:int
+generate_unique_order_id	avl_tree.c	/^long long int generate_unique_order_id() {$/;"	f	typeref:typename:long long int
+generate_unique_order_id	generate_order.c	/^long long int generate_unique_order_id() {$/;"	f	typeref:typename:long long int
+getBalance	avl_tree.c	/^int getBalance(Node *node) {$/;"	f	typeref:typename:int
+getHeight	avl_tree.c	/^int getHeight(Node *node) {$/;"	f	typeref:typename:int
+init_buy_order_avl	avl_tree.c	/^void init_buy_order_avl(buy_order_avl *t) {$/;"	f	typeref:typename:void
+init_sell_order_avl	avl_tree.c	/^void init_sell_order_avl(sell_order_avl *t) {$/;"	f	typeref:typename:void
+inorder_buy_order	avl_tree.c	/^void inorder_buy_order(Node *node) {$/;"	f	typeref:typename:void
+inorder_sell_order	avl_tree.c	/^void inorder_sell_order(Node *node) {$/;"	f	typeref:typename:void
+insert_buy_order	avl_tree.c	/^void insert_buy_order(buy_order_avl *t, Order *order) {$/;"	f	typeref:typename:void
+insert_buy_order_recursive	avl_tree.c	/^Node* insert_buy_order_recursive(Node *node, Order *order, buy_order_avl *t) {$/;"	f	typeref:typename:Node *
+insert_sample_orders	avl_tree.c	/^void insert_sample_orders(buy_order_avl *buy_tree, sell_order_avl *sell_tree) {$/;"	f	typeref:typename:void
+insert_sample_orders	generate_order.c	/^void insert_sample_orders(buy_order_avl *buy_tree, sell_order_avl *sell_tree) {$/;"	f	typeref:typename:void
+insert_sell_order	avl_tree.c	/^void insert_sell_order(sell_order_avl *t, Order *order) {$/;"	f	typeref:typename:void
+insert_sell_order_recursive	avl_tree.c	/^Node* insert_sell_order_recursive(Node *node, Order *order, sell_order_avl *t) {$/;"	f	typeref:typename:Node *
+main	avl_tree.c	/^int main() {$/;"	f	typeref:typename:int
+max	avl_tree.c	/^int max(int a, int b) {$/;"	f	typeref:typename:int
+print_order	order.c	/^void print_order(const Order order) {$/;"	f	typeref:typename:void
+rebalance	avl_tree.c	/^Node* rebalance(Node *node) {$/;"	f	typeref:typename:Node *
+rotateLeft	avl_tree.c	/^Node* rotateLeft(Node *x) {$/;"	f	typeref:typename:Node *
+rotateRight	avl_tree.c	/^Node* rotateRight(Node *y) {$/;"	f	typeref:typename:Node *
+search	avl_tree.c	/^Order *search(buy_order_avl *t, long long order_id, double price) {$/;"	f	typeref:typename:Order *
+search_sell	avl_tree.c	/^Order *search_sell(sell_order_avl *t, long long order_id, double price) {$/;"	f	typeref:typename:Order *
+updateHeight	avl_tree.c	/^void updateHeight(Node *node) {$/;"	f	typeref:typename:void

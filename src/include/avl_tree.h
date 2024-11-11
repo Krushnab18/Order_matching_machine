@@ -18,8 +18,8 @@ typedef struct sell_order_avl{
 }sell_order_avl;
 
 
-init_buy_order_avl(buy_order_avl *t);
-init_sell_order_avl(sell_order_avl *t);
+void init_buy_order_avl(buy_order_avl *t);
+void init_sell_order_avl(sell_order_avl *t);
 Node *createNode(Order *order);
 int getHeight(Node *node);
 int getBf(Node *node);
@@ -30,8 +30,9 @@ Node *rightRotate(Node *x);
 
 void insert_buy_order(buy_order_avl *t, Order *order);
 void insert_sell_order(sell_order_avl *t, Order *order);
-void delete_buy_order(buy_order_avl *t, Order *order);
-void delete_sell_order(sell_order_avl *t, Order *order);
+int delete_buy_order(buy_order_avl *t, Order *order, Node **n);
+int delete_sell_order(sell_order_avl *t, Order *order, Node **n);
 
 void inorder_buy_order(Node *node);
 void inorder_sell_order(Node *node);
+void update_max_order(buy_order_avl *t);
