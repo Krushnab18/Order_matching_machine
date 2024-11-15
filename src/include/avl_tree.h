@@ -1,4 +1,7 @@
-#include "order.h"
+#ifndef AVL_TREE
+#define AVL_TREE
+
+#include "./order.h"
 
 typedef struct Node{
     Order *order;
@@ -36,3 +39,5 @@ int delete_sell_order(sell_order_avl *t, Order *order, Node **n);
 void inorder_buy_order(Node *node);
 void inorder_sell_order(Node *node);
 void update_max_order(buy_order_avl *t);
+
+#endif // AVL_TREE

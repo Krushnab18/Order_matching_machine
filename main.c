@@ -1,33 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <stdbool.h>
+#include <string.h>
+#include "./src/include/order.h"
+#include "./src/include/order_book.h"
+#include "./src/include/avl_tree.h"
+#include "./src/include/generate_order.h"
+#include "./src/include/display.h"
 
 int main() {
-    
-    
-    srand(time(NULL));
 
-    printf("**************************  WELCOME TO OUR ORDER MATCHING MACHINE  ******************************\n");
-    
-    generate_orders();
+    buy_order_avl buy_tree;
+    sell_order_avl sell_tree;
 
-    while(true) {
-        
-        //here user would be able to add order, cancel order, veiw order log;
-        display_menu();
+    init_buy_order_avl(&buy_tree);
+    init_sell_order_avl(&sell_tree);
 
-        // these function would generate  100 random orders with current time_stamp  and add it to the max heap and min heap
-        generate_orders();
+    Order_book order_book;
+    init_order_book(&order_book);
 
-        // These function would call matching engine and print the matched orders, and add the matched orders to the order log
-        match_orders();
 
-        sleep(5); // stops execution for 5 seconds;
+    for(int i = 0; i < 100; i++) {
+        Order *buy_order = create_unique_order('B');
+        matching_fifo(&buy_tree, &sell_tree, buy_order, &order_book);
+
+        Order *sell_order = create_unique_order('S');
+        matching_fifo(&buy_tree, &sell_tree, sell_order, &order_book);
 
     }
 
-    return 0;
+    printf("These is inorder traversal of buy tree: \n");
+    inorder_buy_order(buy_tree.root);
+    printf("These is inorder traversal of sell tree\n");
+    inorder_sell_order(sell_tree.root);
 
+
+    return 0;
 }

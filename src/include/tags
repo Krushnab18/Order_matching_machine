@@ -1,0 +1,44 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/krushna/DSA-PROJECT/src/include/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+AVL_TREE	avl_tree.h	/^#define AVL_TREE$/;"	d
+DISPLAY_H	display.h	/^#define DISPLAY_H$/;"	d
+GENERATE_ORDER_H	generate_order.h	/^#define GENERATE_ORDER_H$/;"	d
+MATCHING_H	matching.h	/^#define MATCHING_H$/;"	d
+Node	avl_tree.h	/^typedef struct Node{$/;"	s
+Node	avl_tree.h	/^}Node;$/;"	t	typeref:struct:Node
+ORDERBOOK_H	order_book.h	/^#define ORDERBOOK_H$/;"	d
+ORDER_H	order.h	/^#define ORDER_H$/;"	d
+Order	order.h	/^typedef struct Order {$/;"	s
+Order	order.h	/^} Order;$/;"	t	typeref:struct:Order
+Order_book	order_book.h	/^typedef orderNode* Order_book;$/;"	t	typeref:typename:orderNode *
+buyOrder	order_book.h	/^    Order *buyOrder, *sellOrder;$/;"	m	struct:orderNode	typeref:typename:Order *
+buy_order_avl	avl_tree.h	/^typedef struct buy_order_avl{$/;"	s
+buy_order_avl	avl_tree.h	/^}buy_order_avl;$/;"	t	typeref:struct:buy_order_avl
+height	avl_tree.h	/^    int height;$/;"	m	struct:Node	typeref:typename:int
+lchild	avl_tree.h	/^    struct Node *lchild, *rchild;$/;"	m	struct:Node	typeref:struct:Node *
+max_order	avl_tree.h	/^    Order *max_order;$/;"	m	struct:buy_order_avl	typeref:typename:Order *
+min_order	avl_tree.h	/^    Order *min_order;$/;"	m	struct:sell_order_avl	typeref:typename:Order *
+next	order_book.h	/^    struct orderNode *next;$/;"	m	struct:orderNode	typeref:struct:orderNode *
+order	avl_tree.h	/^    Order *order;$/;"	m	struct:Node	typeref:typename:Order *
+orderNode	order_book.h	/^typedef struct orderNode {$/;"	s
+orderNode	order_book.h	/^} orderNode;$/;"	t	typeref:struct:orderNode
+order_id	order.h	/^    long long order_id;$/;"	m	struct:Order	typeref:typename:long long
+price	order.h	/^    double price;$/;"	m	struct:Order	typeref:typename:double
+quantity	order.h	/^    int quantity;$/;"	m	struct:Order	typeref:typename:int
+rchild	avl_tree.h	/^    struct Node *lchild, *rchild;$/;"	m	struct:Node	typeref:struct:Node *
+root	avl_tree.h	/^    Node *root;$/;"	m	struct:buy_order_avl	typeref:typename:Node *
+root	avl_tree.h	/^    Node *root;$/;"	m	struct:sell_order_avl	typeref:typename:Node *
+sellOrder	order_book.h	/^    Order *buyOrder, *sellOrder;$/;"	m	struct:orderNode	typeref:typename:Order *
+sell_order_avl	avl_tree.h	/^typedef struct sell_order_avl{$/;"	s
+sell_order_avl	avl_tree.h	/^}sell_order_avl;$/;"	t	typeref:struct:sell_order_avl
+side	order.h	/^    char side;$/;"	m	struct:Order	typeref:typename:char
+time_stamp	order.h	/^    struct timeval time_stamp; \/\/ Correct type for time_stamp$/;"	m	struct:Order	typeref:struct:timeval
