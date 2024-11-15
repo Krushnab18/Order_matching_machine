@@ -28,7 +28,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
             if((new_order -> price) != (temp -> order -> price)) {
 
                 insert_buy_order(buy_tree, new_order);
-                printf("There is no match for the given buy-order in the sell-order");
+                printf("There is no match for the given buy-order in the sell-order\n");
 
                 return;
 
@@ -40,6 +40,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     addorder_to_orderBook(orderBook, new_order, temp -> order);
                     delete_sell_order(sell_tree, temp -> order, &sell_tree->root);
                     printf("The order is matched.\n");
+                    display_matched_order(orderBook);
 
                 } else if((temp -> order -> quantity) > (new_order -> quantity)) {
 
@@ -50,6 +51,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     addorder_to_orderBook(orderBook, new_order, matched_order);
                     temp -> order -> quantity = (temp -> order -> quantity) - (new_order -> quantity);
                     printf("The order is matched.\n");
+                    display_matched_order(orderBook);
 
                 } else {
 
@@ -63,6 +65,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     delete_sell_order(sell_tree, temp -> order, &sell_tree->root);
 
                     printf("The order is matched.\n");
+                    display_matched_order(orderBook);
                     
                 }
 
@@ -92,7 +95,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     
                     // not a single order match
                     if(flag == 0) {
-                        printf("There is no match for the given buy-order in the sell-order");
+                        printf("There is no match for the given buy-order in the sell-order\n");
                     }
 
                     return;
@@ -104,7 +107,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         addorder_to_orderBook(orderBook, new_order, temp -> order);
                         delete_sell_order(sell_tree, temp -> order, &sell_tree->root);
                         printf("The order is matched.\n");
-
+                        display_matched_order(orderBook);
                         return;
 
                     } else if((temp -> order -> quantity) > (new_order -> quantity)) {
@@ -116,6 +119,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         addorder_to_orderBook(orderBook, new_order, matched_order);
                         temp -> order -> quantity = (temp -> order -> quantity) - (new_order -> quantity);
                         printf("The order is matched.\n");
+                        display_matched_order(orderBook);
 
                         return;
 
@@ -130,6 +134,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         delete_sell_order(sell_tree, temp -> order, &sell_tree->root);
 
                         printf("The order is matched.\n");
+                        display_matched_order(orderBook);
 
                         temp = sell_tree -> root; // run again while loop to match remaining new-order quantity
                         flag = 1;
@@ -162,7 +167,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
             if((new_order -> price) != (temp -> order -> price)) {
 
                 insert_sell_order(sell_tree, new_order);
-                printf("There is no match for the given sell-order in the buy-order");
+                printf("There is no match for the given sell-order in the buy-order\n");
 
                 return;
 
@@ -174,6 +179,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     addorder_to_orderBook(orderBook, temp -> order, new_order);
                     delete_buy_order(buy_tree, temp -> order, &buy_tree->root);
                     printf("The order is matched.\n");
+                    display_matched_order(orderBook);
 
                 } else if((temp -> order -> quantity) > (new_order -> quantity)) {
 
@@ -184,6 +190,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     addorder_to_orderBook(orderBook, matched_order, new_order);
                     temp -> order -> quantity = (temp -> order -> quantity) - (new_order -> quantity);
                     printf("The order is matched.\n");
+                    display_matched_order(orderBook);
 
                 } else {
 
@@ -197,6 +204,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     delete_buy_order(buy_tree, temp -> order, &buy_tree->root);
 
                     printf("The order is matched.\n");
+                    display_matched_order(orderBook);
                     
                 }
 
@@ -226,7 +234,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     
                     // not a single order match
                     if(flag == 0) {
-                        printf("There is no match for the given buy-order in the sell-order");
+                        printf("There is no match for the given buy-order in the sell-order\n");
                     }
 
                     return;
@@ -238,6 +246,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         addorder_to_orderBook(orderBook, temp -> order, new_order);
                         delete_buy_order(buy_tree, temp -> order, &buy_tree->root);
                         printf("The order is matched.\n");
+                        display_matched_order(orderBook);
 
                         return;
 
@@ -250,6 +259,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         addorder_to_orderBook(orderBook, matched_order, new_order);
                         temp -> order -> quantity = (temp -> order -> quantity) - (new_order -> quantity);
                         printf("The order is matched.\n");
+                        display_matched_order(orderBook);
 
                         return;
 
@@ -264,6 +274,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         delete_buy_order(buy_tree, temp -> order, &buy_tree->root);
 
                         printf("The order is matched.\n");
+                        display_matched_order(orderBook);
 
                         temp = buy_tree -> root; // run again while loop to match remaining new-order quantity
                         flag = 1;

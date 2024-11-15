@@ -1,3 +1,11 @@
+#include "../include/order.h"
+#include "../include/order_book.h"
+#include "../include/avl_tree.h"
+#include "../include/matching.h"
+#include <unistd.h>  // Add this at the top of your file
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 // Function to generate a unique 10-digit order ID
 long long int generate_unique_order_id() {
     static long long int counter = 1000000000; // Start from a 10-digit number
@@ -33,16 +41,16 @@ Order* create_unique_order(char type) {
     return order;
 }
 
-void insert_sample_orders(buy_order_avl *buy_tree, sell_order_avl *sell_tree) {
-    srand(time(NULL)); // Initialize random seed
-
-    for (int i = 0; i < 10; i++) {
-        // Create and insert buy order
-        Order *buy_order = create_unique_order('B');
-
-
-        // Create and insert sell order
-        Order *sell_order = create_unique_order('S');
-        insert_sell_order(sell_tree, sell_order);
-    }
-}
+// void insert_sample_orders(buy_order_avl *buy_tree, sell_order_avl *sell_tree) {
+//     srand(time(NULL)); // Initialize random seed
+//
+//     for (int i = 0; i < 10; i++) {
+//         // Create and insert buy order
+//         Order *buy_order = create_unique_order('B');
+//
+//
+//         // Create and insert sell order
+//         Order *sell_order = create_unique_order('S');
+//         insert_sell_order(sell_tree, sell_order);
+//     }
+// }

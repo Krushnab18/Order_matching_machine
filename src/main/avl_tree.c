@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "../include/order.h"
 #include <unistd.h>
 
 void init_buy_order_avl(buy_order_avl *t) {
@@ -328,61 +329,6 @@ void inorder_sell_order(Node *node) {
 }
 
 
-// Function to generate a unique 10-digit order ID
-long long int generate_unique_order_id() {
-    static long long int counter = 1000000000; // Start from a 10-digit number
-    return counter++; // Increment and return unique ID
-}
-
-Order* create_unique_order(char type) {
-    Order* order = (Order*)malloc(sizeof(Order));
-
-    // Generate a unique 10-digit order_id
-    order->order_id = generate_unique_order_id();
-    order->side = type;
-    
-    // Randomize quantity between 1 and 100
-    order->quantity = rand() % 100 + 1; // Random quantity between 1 and 100
-    
-    // Randomize price between 50.00 and 60.00, with two decimal places
-    order->price = (rand() % 11) + 50.00; // Random price between 50.00 and 60.00
-
-    // Round to two decimal places
-    order->price = ((int)(order->price * 100)) / 100.0;
-
-    // Get current time for unique timestamp
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-
-    // Introduce a small delay (in microseconds) to prevent same timestamp for multiple orders
-   usleep(10);  // 10 microseconds delay (or adjust as necessary)
-
-    order->time_stamp.tv_sec = tv.tv_sec;
-    order->time_stamp.tv_usec = tv.tv_usec;
-
-    return order;
-}
-
-void insert_sample_orders(buy_order_avl *buy_tree, sell_order_avl *sell_tree) {
-    srand(time(NULL)); // Initialize random seed
-    
-    for (int i = 0; i < 10; i++) {
-        // Create and insert buy order
-        Order *buy_order = create_unique_order('B');
-    
-        printf("Order ID: %lld, Price: %.2f, time_stamp: %ld.%06ld\n",
-               buy_order->order_id,
-               buy_order->price,
-               (long)buy_order->time_stamp.tv_sec,
-               (long)buy_order->time_stamp.tv_usec);
-        insert_buy_order(buy_tree, buy_order);
-        
-        // Create and insert sell order
-        Order *sell_order = create_unique_order('S');
-        insert_sell_order(sell_tree, sell_order);
-    }
-}
-
 Order *search(buy_order_avl *t, long long order_id, double price) {
 
     Node *n = t->root;
@@ -417,47 +363,3 @@ Order *search_sell(sell_order_avl *t, long long order_id, double price) {
     return NULL;
 }
 // Example call
-int main() {
-    buy_order_avl buy_tree;
-    sell_order_avl sell_tree;
-
-    // Initialize AVL trees for buy and sell orders
-    init_buy_order_avl(&buy_tree);
-    init_sell_order_avl(&sell_tree);
-
-    // Insert sample orders
-    insert_sample_orders(&buy_tree, &sell_tree);
-
-    // Print buy orders in in-order traversal
-    printf("In-order traversal of Buy Orders:\n");
-    inorder_buy_order(buy_tree.root);
-
-    // Print sell orders in in-order traversal
-    printf("In-order traversal of Sell Orders:\n");
-    inorder_sell_order(sell_tree.root);
-
-    printf("Enter order id and price to delete\n");
-    long long order_id;
-    double price;
-    scanf("%lld %lf", &order_id, &price);
-    Order *order = search(&buy_tree, order_id, price);
-    if(!order) printf("Order not found!\n");
-    if(delete_buy_order(&buy_tree, order, &buy_tree.root)) {
-        printf("Delete successful\n");
-    }
-
-    printf("In-order traversal of Buy Orders:\n");
-    inorder_buy_order(buy_tree.root);
-    
-    printf("Enter order id and price to delete\n");
-    scanf("%lld %lf", &order_id, &price);
-    
-    order = search_sell(&sell_tree, order_id, price);
-    if(delete_sell_order(&sell_tree, order, &sell_tree.root)) {
-        printf("Delete successful\n");
-    }
-
-    printf("In-order traversal of sell Orders:\n");
-    inorder_sell_order(sell_tree.root);
-    return 0;
-}
