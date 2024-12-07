@@ -6,6 +6,7 @@
 typedef struct Order {
     long long order_id;
     int quantity;
+    char timestamp[20];
     double price;
     struct timeval time_stamp; // Correct type for time_stamp
     char side;

@@ -298,12 +298,14 @@ void inorder_buy_order(Node *node) {
     inorder_buy_order(node->lchild);
 
     // Visit the node (print the order)
+    printf("Side: %c, Order ID: %lld, Timestamp: %s, Price: %.2f, Quantity: %d\n", 
+                node->order->side, node->order->order_id, node->order->timestamp, node->order->price, node->order->quantity);
 
-    printf("Order ID: %lld, Price: %.2f, time_stamp: %ld.%06ld\n",
+    /*printf("Order ID: %lld, Price: %.2f, time_stamp: %ld.%06ld\n",
            node->order->order_id,
            node->order->price,
            (long)node->order->time_stamp.tv_sec,
-           (long)node->order->time_stamp.tv_usec);
+           (long)node->order->time_stamp.tv_usec); */
     // Traverse right subtree
     inorder_buy_order(node->rchild);
 }
@@ -319,11 +321,13 @@ void inorder_sell_order(Node *node) {
 
     // Visit the node (print the order)
 
-    printf("Order ID: %lld, Price: %.2f, time_stamp: %ld.%06ld\n",
+    printf("Side: %c, Order ID: %lld, Timestamp: %s, Price: %.2f, Quantity: %d\n", 
+                node->order->side, node->order->order_id, node->order->timestamp, node->order->price, node->order->quantity);
+    /*printf("Order ID: %lld, Price: %.2f, time_stamp: %ld.%06ld\n",
            node->order->order_id,
            node->order->price,
            (long)node->order->time_stamp.tv_sec,
-           (long)node->order->time_stamp.tv_usec);
+           (long)node->order->time_stamp.tv_usec);*/
     // Traverse right subtree
     inorder_sell_order(node->rchild);
 }
