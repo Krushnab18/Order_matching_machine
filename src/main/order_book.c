@@ -21,7 +21,7 @@ void addorder_to_orderBook(Order_book *orderBook, Order *buy, Order *sell) {
 }
 
 //display order
-void display_matched_order(Order_book *orderBook) {
+/*void display_matched_order(Order_book *orderBook) {
     if(*orderBook == NULL) {
         return;
     } 
@@ -31,4 +31,35 @@ void display_matched_order(Order_book *orderBook) {
     printf("The price of per share is : %lf.\n", temp -> buyOrder -> price);
     printf("\n");
     return;
+}*/
+
+/*
+void display_matched_order(Order_book *orderBook) {
+    if (*orderBook == NULL) {
+        return;
+    }
+
+    orderNode *temp = *orderBook;
+
+    printf("Buy Order ID: %lld | Sell Order ID: %lld | Shares: %d | Price/Share: %.2lf\n", 
+           temp->buyOrder->order_id, 
+           temp->sellOrder->order_id, 
+           temp->buyOrder->quantity, 
+           temp->buyOrder->price);
+}*/
+
+
+
+void display_matched_order(Order_book *orderBook) {
+    if (*orderBook == NULL) {
+        return;
+    }
+
+    orderNode *temp = *orderBook;
+
+    printf("%-12lld %-12lld %-8d %-11.2lf\n", 
+           temp->buyOrder->order_id, 
+           temp->sellOrder->order_id, 
+           temp->buyOrder->quantity, 
+           temp->buyOrder->price);
 }

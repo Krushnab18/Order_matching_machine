@@ -7,6 +7,6 @@
 #include "../include/avl_tree.h"
 
 // Function declaration for matching orders based on FIFO logic
-void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *new_order, Order_book *orderBook);
+void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *new_order, Order_book *orderBook, FILE *fp);
 
 #endif /* MATCHING_H */

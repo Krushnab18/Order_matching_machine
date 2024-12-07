@@ -4,9 +4,10 @@
 #include "../include/order.h"
 #include "../include/order_book.h"
 #include "../include/avl_tree.h"
+#include "../include/file_io.h"
 
 
-void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *new_order, Order_book *orderBook) {
+void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *new_order, Order_book *orderBook, FILE *fp) {
 
     if(new_order -> side == 'B') {
         // newly generated order is buy-order
@@ -36,6 +37,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                 if((temp -> order -> quantity) == (new_order -> quantity)) {
 
                     addorder_to_orderBook(orderBook, new_order, temp -> order);
+                    writeToCSV(fp, new_order, temp->order);
                     delete_sell_order(sell_tree, temp -> order, &sell_tree->root);
                     display_matched_order(orderBook);
                     return;//order is matched
@@ -46,8 +48,9 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     memcpy(matched_order, temp -> order, sizeof(Order));
                     matched_order -> quantity = new_order -> quantity;
 
-                    addorder_to_orderBook(orderBook, new_order, matched_order);
                     temp -> order -> quantity = (temp -> order -> quantity) - (new_order -> quantity);
+                    addorder_to_orderBook(orderBook, new_order, matched_order);
+                    writeToCSV(fp, new_order, matched_order);
                     display_matched_order(orderBook); //order matched
 
                 } else {
@@ -57,6 +60,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     matched_order -> quantity = temp -> order -> quantity;
 
                     addorder_to_orderBook(orderBook, matched_order, temp -> order);
+                    writeToCSV(fp, matched_order, temp->order);
                     new_order -> quantity = (new_order -> quantity) - (temp -> order -> quantity);
                     insert_buy_order(buy_tree, new_order);
                     delete_sell_order(sell_tree, temp -> order, &sell_tree->root);
@@ -97,6 +101,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     if((temp -> order -> quantity) == (new_order -> quantity)) {
 
                         addorder_to_orderBook(orderBook, new_order, temp -> order);
+                        writeToCSV(fp, new_order, temp->order);
                         delete_sell_order(sell_tree, temp -> order, &sell_tree->root);
                         display_matched_order(orderBook);
                         return;
@@ -108,6 +113,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         matched_order -> quantity = new_order -> quantity;
 
                         addorder_to_orderBook(orderBook, new_order, matched_order);
+                        writeToCSV(fp, new_order, matched_order);
                         temp -> order -> quantity = (temp -> order -> quantity) - (new_order -> quantity);
                         display_matched_order(orderBook);
 
@@ -120,6 +126,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         matched_order -> quantity = temp -> order -> quantity;
 
                         addorder_to_orderBook(orderBook, matched_order, temp -> order);
+                        writeToCSV(fp, matched_order, temp->order);
                         new_order -> quantity = (new_order -> quantity) - (temp -> order -> quantity);
                         delete_sell_order(sell_tree, temp -> order, &sell_tree->root);
 
@@ -163,6 +170,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                 if((temp -> order -> quantity) == (new_order -> quantity)) {
 
                     addorder_to_orderBook(orderBook, temp -> order, new_order);
+                    writeToCSV(fp, temp->order, new_order);
                     delete_buy_order(buy_tree, temp -> order, &buy_tree->root);
                     display_matched_order(orderBook);
 
@@ -173,6 +181,8 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     matched_order -> quantity = new_order -> quantity;
 
                     addorder_to_orderBook(orderBook, matched_order, new_order);
+
+                    writeToCSV(fp, matched_order, new_order);
                     temp -> order -> quantity = (temp -> order -> quantity) - (new_order -> quantity);
                     display_matched_order(orderBook);
 
@@ -183,6 +193,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     matched_order -> quantity = temp -> order -> quantity;
 
                     addorder_to_orderBook(orderBook, temp -> order, matched_order);
+                    writeToCSV(fp, temp->order, matched_order);
                     new_order -> quantity = (new_order -> quantity) - (temp -> order -> quantity);
                     insert_sell_order(sell_tree, new_order);
                     delete_buy_order(buy_tree, temp -> order, &buy_tree->root);
@@ -223,6 +234,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                     if((temp -> order -> quantity) == (new_order -> quantity)) {
 
                         addorder_to_orderBook(orderBook, temp -> order, new_order);
+                        writeToCSV(fp, temp->order, new_order);
                         delete_buy_order(buy_tree, temp -> order, &buy_tree->root);
                         display_matched_order(orderBook);
 
@@ -235,6 +247,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         matched_order -> quantity = new_order -> quantity;
 
                         addorder_to_orderBook(orderBook, matched_order, new_order);
+                        writeToCSV(fp, matched_order, new_order);
                         temp -> order -> quantity = (temp -> order -> quantity) - (new_order -> quantity);
                         display_matched_order(orderBook);
 
@@ -247,6 +260,7 @@ void matching_fifo(buy_order_avl *buy_tree, sell_order_avl *sell_tree, Order *ne
                         matched_order -> quantity = temp -> order -> quantity;
 
                         addorder_to_orderBook(orderBook, temp -> order, matched_order);
+                        writeToCSV(fp, temp->order, matched_order);
                         new_order -> quantity = (new_order -> quantity) - (temp -> order -> quantity);
                         delete_buy_order(buy_tree, temp -> order, &buy_tree->root);
 
